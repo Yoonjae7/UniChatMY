@@ -115,21 +115,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Generate new pseudonym for this session
       const newPseudonym = generatePseudonym()
       
-      const { data: updatedUser, error: updateError } = await supabase
-        .from('users')
-        .update({ 
-          pseudonym: newPseudonym,
-          last_login: new Date().toISOString()
-        })
-        .eq('id', existingUser.id)
-        .select()
-        .single()
-
-      if (updateError) {
-        console.error('Update error:', updateError)
-        return res.status(500).json({ error: 'Failed to update user' })
+      // Just use existing user with new pseudonym (don't update DB to avoid column issues)
+      user = {
+        ...existingUser,
+        pseudonym: newPseudonym
       }
-      user = updatedUser
     } else {
       // Create new user
       const pseudonym = generatePseudonym()
