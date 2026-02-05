@@ -12,12 +12,13 @@ interface Message {
 }
 
 interface PartnerInfo {
+  id?: string
   pseudonym: string
   university: string
 }
 
 export default function Chat() {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const { socket, isConnected } = useSocket()
   const navigate = useNavigate()
   
@@ -28,6 +29,10 @@ export default function Chat() {
   const [isPartnerTyping, setIsPartnerTyping] = useState(false)
   const [partnerLeft, setPartnerLeft] = useState(false)
   const [isSearchingNext, setIsSearchingNext] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reportSubmitting, setReportSubmitting] = useState(false)
+  const [reportSuccess, setReportSuccess] = useState(false)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -159,6 +164,48 @@ export default function Chat() {
     navigate('/dashboard')
   }
 
+  const handleReport = async () => {
+    if (!reportReason.trim() || !partner?.id || !token) return
+    
+    setReportSubmitting(true)
+    try {
+      // Get last few messages as context
+      const chatContext = messages
+        .slice(-10)
+        .map(m => `${m.sender === 'me' ? 'You' : partner.pseudonym}: ${m.text}`)
+        .join('\n')
+      
+      const res = await fetch('/api/report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          reportedUserId: partner.id,
+          reason: reportReason,
+          chatContext
+        })
+      })
+      
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to submit report')
+      }
+      
+      setReportSuccess(true)
+      setTimeout(() => {
+        setShowReportModal(false)
+        setReportReason('')
+        setReportSuccess(false)
+      }, 2000)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to submit report')
+    } finally {
+      setReportSubmitting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-midnight-950">
       {/* Header */}
@@ -195,6 +242,17 @@ export default function Chat() {
           </div>
           
           <div className="flex items-center gap-2">
+            {!isSearchingNext && partner && (
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors"
+                title="Report user"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </button>
+            )}
             {!isSearchingNext && (
               <button
                 onClick={handleNext}
@@ -206,6 +264,86 @@ export default function Chat() {
           </div>
         </div>
       </header>
+
+      {/* Report Modal */}
+      <AnimatePresence>
+        {showReportModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => !reportSubmitting && setShowReportModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-midnight-900 border border-white/10 rounded-2xl p-6"
+            >
+              {reportSuccess ? (
+                <div className="text-center py-8">
+                  <div className="text-5xl mb-4">✅</div>
+                  <h3 className="text-xl font-semibold mb-2">Report Submitted</h3>
+                  <p className="text-gray-400">Thank you. Our team will review this shortly.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-2xl">🚨</span>
+                    <h3 className="text-xl font-semibold">Report {partner?.pseudonym}</h3>
+                  </div>
+                  
+                  <p className="text-gray-400 text-sm mb-4">
+                    Please describe why you're reporting this user. Include specific details about the violation.
+                  </p>
+                  
+                  <div className="space-y-3 mb-4">
+                    {['Harassment or bullying', 'Hate speech', 'Sharing personal info', 'Spam or scam', 'Other'].map((reason) => (
+                      <button
+                        key={reason}
+                        onClick={() => setReportReason(reason === 'Other' ? '' : reason)}
+                        className={`w-full p-3 rounded-xl text-left transition-colors ${
+                          reportReason === reason
+                            ? 'bg-red-500/20 border border-red-500/50 text-red-400'
+                            : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                        }`}
+                      >
+                        {reason}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <textarea
+                    value={reportReason}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    placeholder="Describe what happened..."
+                    className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-red-500/50 transition-colors resize-none h-24 mb-4"
+                  />
+                  
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowReportModal(false)}
+                      disabled={reportSubmitting}
+                      className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleReport}
+                      disabled={!reportReason.trim() || reportSubmitting}
+                      className="flex-1 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
+                    >
+                      {reportSubmitting ? 'Submitting...' : 'Submit Report'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">

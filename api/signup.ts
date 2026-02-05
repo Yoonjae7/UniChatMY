@@ -1,8 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { createClient } from '@supabase/supabase-js'
 
-// In-memory store (resets on cold start - use a database for production)
-const users: Record<string, any> = {}
-const verificationCodes: Record<string, { code: string; expiresAt: Date }> = {}
+const supabase = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_KEY || ''
+)
 
 // Malaysian university domains
 const knownUniversities: Record<string, { name: string; country: string; countryCode: string }> = {
@@ -88,20 +90,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Email is required' })
   }
 
-  const university = getUniversityFromEmail(email)
+  const emailLower = email.toLowerCase().trim()
+  const university = getUniversityFromEmail(emailLower)
+  
   if (!university) {
     return res.status(400).json({ error: 'Please use a valid Malaysian university email (.edu.my)' })
   }
 
+  // Check if user is banned
+  const { data: existingUser } = await supabase
+    .from('users')
+    .select('is_banned, ban_reason')
+    .eq('email', emailLower)
+    .single()
+
+  if (existingUser?.is_banned) {
+    return res.status(403).json({ 
+      error: 'This account has been suspended.',
+      reason: existingUser.ban_reason || 'Violation of community guidelines'
+    })
+  }
+
   const code = generateCode()
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 minutes
 
-  // Store verification code (in production, use a database)
-  verificationCodes[email] = { code, expiresAt }
+  // Store verification code in Supabase
+  const { error: insertError } = await supabase
+    .from('verification_codes')
+    .insert({
+      email: emailLower,
+      code,
+      expires_at: expiresAt,
+      used: false
+    })
 
-  console.log(`DEV MODE - Verification code for ${email}: ${code}`)
+  if (insertError) {
+    console.error('Error storing verification code:', insertError)
+    // Continue anyway for demo - code will be in response
+  }
 
-  // For now, just return success (email sending would need SMTP config)
+  console.log(`Verification code for ${emailLower}: ${code}`)
+
   return res.status(200).json({
     message: 'Verification code sent',
     university: university.name,
@@ -110,6 +139,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     devCode: code
   })
 }
-
-// Export for verify endpoint to access
-export { verificationCodes, users, knownUniversities, getUniversityFromEmail }

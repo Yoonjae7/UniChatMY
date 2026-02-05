@@ -6,6 +6,7 @@ import Signup from './pages/Signup'
 import Verify from './pages/Verify'
 import Dashboard from './pages/Dashboard'
 import Chat from './pages/Chat'
+import Admin from './pages/Admin'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/verify" element={<Verify />} />
+            <Route path="/admin" element={<Admin />} />
             <Route
               path="/dashboard"
               element={

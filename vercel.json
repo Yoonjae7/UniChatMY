@@ -2,9 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "cd client && npm install && npx vite build",
   "outputDirectory": "client/dist",
-  "installCommand": "npm install jsonwebtoken && npm install --save-dev @vercel/node @types/jsonwebtoken",
+  "installCommand": "npm install jsonwebtoken @supabase/supabase-js && npm install --save-dev @vercel/node @types/jsonwebtoken",
   "functions": {
-    "api/*.ts": {
+    "api/**/*.ts": {
       "memory": 256,
       "maxDuration": 10
     }
@@ -12,6 +12,10 @@
   "rewrites": [
     { "source": "/api/auth/signup", "destination": "/api/signup" },
     { "source": "/api/auth/verify", "destination": "/api/verify" },
+    { "source": "/api/report", "destination": "/api/report" },
+    { "source": "/api/admin/users", "destination": "/api/admin/users" },
+    { "source": "/api/admin/ban", "destination": "/api/admin/ban" },
+    { "source": "/api/admin/reports", "destination": "/api/admin/reports" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
