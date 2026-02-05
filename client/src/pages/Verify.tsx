@@ -64,7 +64,8 @@ export default function Verify() {
     setIsLoading(true)
 
     try {
-      const res = await fetch('/api/auth/verify', {
+      const apiUrl = import.meta.env.VITE_SERVER_URL || ''
+      const res = await fetch(`${apiUrl}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: verificationCode }),
