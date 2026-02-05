@@ -9,7 +9,7 @@ const universities = [
   { name: 'Monash', color: '#3B82F6', emoji: '👨🏿' },
   { name: 'Nottingham', color: '#10B981', emoji: '🏛️' },
   { name: 'APU', color: '#EF4444', emoji: '💻' },
-  { name: 'MMU', color: '#6366F1', emoji: '🎬' },
+  { name: 'MMU', color: '#6366F1', emoji: '🩺' },
   { name: 'Heriot-Watt', color: '#8B5CF6', emoji: '⚙️' },
   { name: 'UOW', color: '#0EA5E9', emoji: '🌊' },
   { name: 'UCSI', color: '#14B8A6', emoji: '🏥' },
