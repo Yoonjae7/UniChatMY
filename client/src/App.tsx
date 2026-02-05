@@ -18,7 +18,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/verify" element={<Verify />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/unichat-control-panel-2026" element={<Admin />} />
             <Route
               path="/dashboard"
               element={
