@@ -84,12 +84,14 @@ input:focus, textarea:focus {
 .marquee-container {
   overflow: hidden;
   width: 100%;
+  padding: 20px 0;
 }
 
 .marquee-track {
   display: flex;
   width: max-content;
   animation: scroll 40s linear infinite;
+  padding: 10px 0;
 }
 
 @keyframes scroll {
@@ -124,7 +126,15 @@ input:focus, textarea:focus {
 }
 
 .uni-card:hover {
-  transform: translateY(-4px) scale(1.08);
-  box-shadow: 0 10px 40px var(--uni-color-glow);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 30px var(--uni-color-glow);
   z-index: 10;
+}
+
+.marquee-track {
+  margin: 0 -10px;
+}
+
+.marquee-track .uni-card {
+  margin: 0 12px;
 }
