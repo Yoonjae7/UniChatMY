@@ -12,21 +12,40 @@ dotenv.config()
 const app = express()
 const httpServer = createServer(app)
 
+// Allow multiple origins for CORS
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://uni-chat-my.vercel.app',
+  'https://unichatmy.vercel.app',
+  process.env.CLIENT_URL,
+].filter(Boolean) as string[]
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 })
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: allowedOrigins,
+  credentials: true,
 }))
 app.use(express.json())
 
 // Routes
 app.use('/api/auth', authRoutes)
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    name: 'UniChat Server',
+    status: 'running',
+    socketio: 'enabled'
+  })
+})
 
 // Health check
 app.get('/api/health', (req, res) => {
