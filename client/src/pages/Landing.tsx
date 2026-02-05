@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useRef, useState } from 'react'
 
 // Malaysian university data for the marquee
 const universities = [
@@ -24,9 +24,20 @@ const universities = [
 
 export default function Landing() {
   const howItWorksRef = useRef<HTMLElement>(null)
+  const [showPolicy, setShowPolicy] = useState(false)
+  const navigate = useNavigate()
 
   const scrollToHowItWorks = () => {
     howItWorksRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleGetStarted = () => {
+    setShowPolicy(true)
+  }
+
+  const handleAgreePolicy = () => {
+    setShowPolicy(false)
+    navigate('/signup')
   }
 
   return (
@@ -115,13 +126,13 @@ export default function Landing() {
               transition={{ delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Link
-                to="/signup"
+              <button
+                onClick={handleGetStarted}
                 className="group relative px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-xl font-semibold text-lg overflow-hidden transition-all hover:scale-105"
               >
                 <span className="relative z-10">Get Started Free</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-neon-purple to-neon-cyan opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
+              </button>
               
               <button 
                 onClick={scrollToHowItWorks}
@@ -139,9 +150,9 @@ export default function Landing() {
               className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
             >
               {[
-                { value: '500+', label: 'Universities' },
-                { value: '50k+', label: 'Students' },
-                { value: '1M+', label: 'Chats' },
+                { value: '20+', label: 'Universities' },
+                { value: '5k+', label: 'Students' },
+                { value: '10k+', label: 'Chats' },
               ].map((stat, i) => (
                 <div key={i} className="text-center">
                   <div className="text-2xl md:text-3xl font-bold gradient-text">{stat.value}</div>
@@ -273,6 +284,133 @@ export default function Landing() {
           <p>© 2026 UniChat. Made for students, by students.</p>
         </footer>
       </div>
+
+      {/* Policy Modal */}
+      <AnimatePresence>
+        {showPolicy && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowPolicy(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg max-h-[85vh] overflow-y-auto bg-midnight-950 border border-white/10 rounded-2xl shadow-2xl"
+            >
+              {/* Header */}
+              <div className="sticky top-0 bg-midnight-950 p-6 border-b border-white/10">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-3xl">🤝</span>
+                  <h2 className="text-2xl font-bold">Community Guidelines</h2>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Let's keep UniChat a safe & fun space for everyone
+                </p>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {/* Safe Space */}
+                <div className="p-4 rounded-xl bg-neon-green/10 border border-neon-green/30">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">💚</span>
+                    <div>
+                      <h3 className="font-semibold text-neon-green mb-1">This is YOUR safe space</h3>
+                      <p className="text-sm text-gray-300">
+                        UniChat is built for Malaysian uni students to connect, make friends, and have fun conversations. 
+                        Your identity is protected with random pseudonyms - be yourself!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rules */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <span>📋</span> What we don't tolerate
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    {[
+                      {
+                        icon: '🚫',
+                        title: 'Bullying & Harassment',
+                        desc: 'No intimidation, threats, or targeting other students',
+                      },
+                      {
+                        icon: '🚫',
+                        title: 'Defamation & Rumours',
+                        desc: 'No spreading false information about individuals or universities',
+                      },
+                      {
+                        icon: '🚫',
+                        title: 'Sharing Private Info',
+                        desc: "Don't share others' personal details, screenshots, or private conversations",
+                      },
+                      {
+                        icon: '🚫',
+                        title: 'Hate Speech',
+                        desc: 'No discrimination based on race, religion, gender, or background',
+                      },
+                    ].map((rule, i) => (
+                      <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white/5">
+                        <span className="text-lg">{rule.icon}</span>
+                        <div>
+                          <h4 className="font-medium text-sm">{rule.title}</h4>
+                          <p className="text-xs text-gray-400">{rule.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Report & Investigation */}
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">⚠️</span>
+                    <div>
+                      <h3 className="font-semibold text-amber-400 mb-1">Reports & Investigations</h3>
+                      <p className="text-sm text-gray-300">
+                        If we receive reports of violations, we may investigate and take action including 
+                        account suspension. Serious cases may be escalated to university authorities.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Positive note */}
+                <div className="text-center py-4">
+                  <p className="text-gray-400 text-sm">
+                    99% of students are here to have genuine conversations. <br/>
+                    <span className="text-neon-cyan">Be one of them! 🎉</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-midnight-950 p-6 border-t border-white/10 space-y-3">
+                <button
+                  onClick={handleAgreePolicy}
+                  className="w-full py-4 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity"
+                >
+                  I Agree - Let's Go! 🚀
+                </button>
+                <button
+                  onClick={() => setShowPolicy(false)}
+                  className="w-full py-3 text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
