@@ -1,7 +1,34 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useRef } from 'react'
+
+// Malaysian university data for the marquee
+const universities = [
+  { name: "Taylor's", color: '#8B0000' },
+  { name: 'Sunway', color: '#FF6B00' },
+  { name: 'Monash', color: '#006DAE' },
+  { name: 'Nottingham', color: '#0D5257' },
+  { name: 'APU', color: '#E31937' },
+  { name: 'MMU', color: '#003366' },
+  { name: 'Heriot-Watt', color: '#00247D' },
+  { name: 'UOW', color: '#0033A0' },
+  { name: 'UCSI', color: '#1E3A8A' },
+  { name: 'HELP', color: '#DC2626' },
+  { name: 'INTI', color: '#7C3AED' },
+  { name: 'SEGi', color: '#059669' },
+  { name: 'UiTM', color: '#7C2D12' },
+  { name: 'UM', color: '#1D4ED8' },
+  { name: 'USM', color: '#BE185D' },
+  { name: 'UTM', color: '#B91C1C' },
+]
 
 export default function Landing() {
+  const howItWorksRef = useRef<HTMLElement>(null)
+
+  const scrollToHowItWorks = () => {
+    howItWorksRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated background */}
@@ -96,7 +123,10 @@ export default function Landing() {
                 <div className="absolute inset-0 bg-gradient-to-r from-neon-purple to-neon-cyan opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
               
-              <button className="px-8 py-4 border border-white/20 rounded-xl font-semibold text-lg hover:bg-white/5 transition-colors">
+              <button 
+                onClick={scrollToHowItWorks}
+                className="px-8 py-4 border border-white/20 rounded-xl font-semibold text-lg hover:bg-white/5 transition-colors"
+              >
                 How it works
               </button>
             </motion.div>
@@ -122,8 +152,89 @@ export default function Landing() {
           </div>
         </main>
 
+        {/* University Marquee */}
+        <section className="py-12 overflow-hidden border-y border-white/5">
+          <p className="text-center text-sm text-gray-500 mb-6">Connecting students from</p>
+          <div className="relative">
+            {/* Gradient overlays for smooth fade effect */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-midnight-950 to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-midnight-950 to-transparent z-10" />
+            
+            {/* Scrolling container */}
+            <div className="flex animate-marquee">
+              {[...universities, ...universities].map((uni, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 mx-6 px-6 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <span 
+                    className="font-bold text-lg"
+                    style={{ color: uni.color }}
+                  >
+                    {uni.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works */}
+        <section ref={howItWorksRef} className="py-20 px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+            <p className="text-gray-400">Three simple steps to start chatting</p>
+          </motion.div>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  step: '01',
+                  title: 'Verify Your Uni Email',
+                  description: 'Sign up with your .edu.my email. We send a 6-digit code to verify you\'re a real student.',
+                  icon: '📧',
+                },
+                {
+                  step: '02',
+                  title: 'Get a Random Name',
+                  description: 'You\'ll get a fun pseudonym like "SleepyPanda" or "BoldTiger". Your identity stays hidden!',
+                  icon: '🎭',
+                },
+                {
+                  step: '03',
+                  title: 'Match & Chat',
+                  description: 'Hit "Find Match" and get connected with another Malaysian uni student instantly. Don\'t vibe? Hit "Next"!',
+                  icon: '💬',
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="relative p-6 rounded-2xl bg-white/5 border border-white/10"
+                >
+                  <div className="absolute -top-4 left-6 px-3 py-1 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-full text-sm font-mono font-bold">
+                    {item.step}
+                  </div>
+                  <div className="text-4xl mb-4 mt-2">{item.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                  <p className="text-gray-400 text-sm">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Features */}
-        <section className="py-16 px-6">
+        <section className="py-16 px-6 border-t border-white/5">
           <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
             {[
               {
