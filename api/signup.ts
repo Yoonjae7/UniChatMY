@@ -1,10 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_KEY || ''
 )
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Malaysian university domains
 const knownUniversities: Record<string, { name: string; country: string; countryCode: string }> = {
@@ -131,11 +134,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   console.log(`Verification code for ${emailLower}: ${code}`)
 
+  // Send real email via Resend
+  try {
+    await resend.emails.send({
+      from: 'UniChat <onboarding@resend.dev>',
+      to: emailLower,
+      subject: `Your UniChat verification code: ${code}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #6366f1; text-align: center;">🎓 UniChat</h1>
+          <h2 style="text-align: center; color: #333;">Your Verification Code</h2>
+          <div style="background: linear-gradient(135deg, #06b6d4, #8b5cf6); padding: 30px; border-radius: 16px; text-align: center; margin: 20px 0;">
+            <span style="font-size: 36px; font-weight: bold; color: white; letter-spacing: 8px;">${code}</span>
+          </div>
+          <p style="color: #666; text-align: center;">Enter this code to verify your ${university.name} email.</p>
+          <p style="color: #999; text-align: center; font-size: 12px;">This code expires in 10 minutes.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #999; text-align: center; font-size: 11px;">If you didn't request this code, you can safely ignore this email.</p>
+        </div>
+      `
+    })
+    console.log(`Email sent to ${emailLower}`)
+  } catch (emailError) {
+    console.error('Failed to send email:', emailError)
+    // Still return success - code is in database, user can retry
+  }
+
   return res.status(200).json({
     message: 'Verification code sent',
     university: university.name,
-    country: university.countryCode,
-    // DEV ONLY - remove in production!
-    devCode: code
+    country: university.countryCode
   })
 }

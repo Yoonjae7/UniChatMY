@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "cd client && npm install && npx vite build",
   "outputDirectory": "client/dist",
-  "installCommand": "npm install jsonwebtoken @supabase/supabase-js && npm install --save-dev @vercel/node @types/jsonwebtoken",
+  "installCommand": "npm install jsonwebtoken @supabase/supabase-js resend && npm install --save-dev @vercel/node @types/jsonwebtoken",
   "functions": {
     "api/**/*.ts": {
       "memory": 256,
