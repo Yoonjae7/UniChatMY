@@ -1,13 +1,20 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
 const supabase = createClient(
   process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_KEY || ''
 )
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Gmail SMTP setup
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+})
 
 // Malaysian university domains
 const knownUniversities: Record<string, { name: string; country: string; countryCode: string }> = {
@@ -134,10 +141,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   console.log(`Verification code for ${emailLower}: ${code}`)
 
-  // Send real email via Resend
+  // Send real email via Gmail SMTP
   try {
-    await resend.emails.send({
-      from: 'UniChat <onboarding@resend.dev>',
+    await transporter.sendMail({
+      from: `"UniChat" <${process.env.SMTP_USER}>`,
       to: emailLower,
       subject: `Your UniChat verification code: ${code}`,
       html: `
@@ -157,7 +164,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log(`Email sent to ${emailLower}`)
   } catch (emailError) {
     console.error('Failed to send email:', emailError)
-    // Still return success - code is in database, user can retry
   }
 
   return res.status(200).json({
