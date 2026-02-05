@@ -143,6 +143,24 @@ export default function Landing() {
               </button>
             </motion.div>
 
+            {/* Alpha Test Button - TEMPORARY */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="mt-6"
+            >
+              <Link
+                to="/alpha"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500/20 border border-amber-500/50 rounded-xl font-medium text-amber-400 hover:bg-amber-500/30 transition-colors"
+              >
+                <span>🧪</span>
+                Get Started Free (Alpha Test)
+                <span className="text-xs bg-amber-500/30 px-2 py-0.5 rounded-full">Skip verification</span>
+              </Link>
+            </motion.div>
+            {/* END Alpha Test Button */}
+
             {/* Stats */}
             <motion.div
               initial={{ opacity: 0 }}

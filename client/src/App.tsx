@@ -7,6 +7,7 @@ import Verify from './pages/Verify'
 import Dashboard from './pages/Dashboard'
 import Chat from './pages/Chat'
 import Admin from './pages/Admin'
+import Alpha from './pages/Alpha'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/verify" element={<Verify />} />
+            <Route path="/alpha" element={<Alpha />} />
             <Route path="/unichat-control-panel-2026" element={<Admin />} />
             <Route
               path="/dashboard"

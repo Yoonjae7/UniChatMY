@@ -11,6 +11,8 @@
   "rewrites": [
     { "source": "/api/auth/signup", "destination": "/api/signup" },
     { "source": "/api/auth/verify", "destination": "/api/verify" },
+    { "source": "/api/alpha-signup", "destination": "/api/alpha-signup" },
+    { "source": "/api/get-university", "destination": "/api/get-university" },
     { "source": "/api/report", "destination": "/api/report" },
     { "source": "/api/admin/users", "destination": "/api/admin/users" },
     { "source": "/api/admin/ban", "destination": "/api/admin/ban" },
