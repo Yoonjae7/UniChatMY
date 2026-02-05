@@ -7,9 +7,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || ''
 )
 
-// Gmail SMTP setup
+// Brevo SMTP setup
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
@@ -144,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Send real email via Gmail SMTP
   try {
     await transporter.sendMail({
-      from: `"UniChat" <${process.env.SMTP_USER}>`,
+      from: `"UniChat" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: emailLower,
       subject: `Your UniChat verification code: ${code}`,
       html: `
