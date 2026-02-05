@@ -146,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Send real email via Gmail SMTP
   try {
     await transporter.sendMail({
-      from: `"UniChat" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM ? `"UniChat" <${process.env.SMTP_FROM}>` : `"UniChat" <noreply@unichat.app>`,
       to: emailLower,
       subject: `Your UniChat verification code: ${code}`,
       html: `

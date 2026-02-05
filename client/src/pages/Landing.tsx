@@ -4,22 +4,22 @@ import { useRef, useState } from 'react'
 
 // Malaysian university data for the marquee
 const universities = [
-  { name: "Taylor's", color: '#8B0000' },
-  { name: 'Sunway', color: '#FF6B00' },
-  { name: 'Monash', color: '#006DAE' },
-  { name: 'Nottingham', color: '#0D5257' },
-  { name: 'APU', color: '#E31937' },
-  { name: 'MMU', color: '#003366' },
-  { name: 'Heriot-Watt', color: '#00247D' },
-  { name: 'UOW', color: '#0033A0' },
-  { name: 'UCSI', color: '#1E3A8A' },
-  { name: 'HELP', color: '#DC2626' },
-  { name: 'INTI', color: '#7C3AED' },
-  { name: 'SEGi', color: '#059669' },
-  { name: 'UiTM', color: '#7C2D12' },
-  { name: 'UM', color: '#1D4ED8' },
-  { name: 'USM', color: '#BE185D' },
-  { name: 'UTM', color: '#B91C1C' },
+  { name: "Taylor's", color: '#DC2626', emoji: '🎓' },
+  { name: 'Sunway', color: '#F97316', emoji: '☀️' },
+  { name: 'Monash', color: '#3B82F6', emoji: '🔬' },
+  { name: 'Nottingham', color: '#10B981', emoji: '🏛️' },
+  { name: 'APU', color: '#EF4444', emoji: '💻' },
+  { name: 'MMU', color: '#6366F1', emoji: '📡' },
+  { name: 'Heriot-Watt', color: '#8B5CF6', emoji: '⚙️' },
+  { name: 'UOW', color: '#0EA5E9', emoji: '🌊' },
+  { name: 'UCSI', color: '#14B8A6', emoji: '🏥' },
+  { name: 'HELP', color: '#F43F5E', emoji: '📚' },
+  { name: 'INTI', color: '#A855F7', emoji: '🎯' },
+  { name: 'SEGi', color: '#22C55E', emoji: '🌟' },
+  { name: 'UiTM', color: '#EAB308', emoji: '🦅' },
+  { name: 'UM', color: '#3B82F6', emoji: '🏆' },
+  { name: 'USM', color: '#EC4899', emoji: '🔭' },
+  { name: 'UTM', color: '#EF4444', emoji: '🚀' },
 ]
 
 export default function Landing() {
@@ -176,10 +176,15 @@ export default function Landing() {
               {[...universities, ...universities].map((uni, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 mx-6 px-6 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+                  className="uni-card flex-shrink-0 mx-4 px-5 py-3 rounded-2xl border border-white/10 flex items-center gap-3"
+                  style={{ 
+                    '--uni-color': uni.color,
+                    '--uni-color-glow': `${uni.color}40`
+                  } as React.CSSProperties}
                 >
+                  <span className="text-2xl">{uni.emoji}</span>
                   <span 
-                    className="font-bold text-lg"
+                    className="font-bold text-lg tracking-wide"
                     style={{ color: uni.color }}
                   >
                     {uni.name}
