@@ -89,11 +89,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .limit(1)
     .single()
 
-  // For demo/dev: if Supabase isn't configured, accept any 6-digit code
-  const isDemo = !process.env.SUPABASE_URL || !verificationData
-
-  if (!isDemo && !verificationData) {
-    return res.status(400).json({ error: 'Invalid or expired code' })
+  // Require valid verification code
+  if (!verificationData) {
+    return res.status(400).json({ error: 'Invalid or expired verification code' })
   }
 
   // Mark code as used
