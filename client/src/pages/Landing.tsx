@@ -6,10 +6,10 @@ import { useRef, useState } from 'react'
 const universities = [
   { name: "Taylor's", color: '#DC2626', emoji: '🎓' },
   { name: 'Sunway', color: '#F97316', emoji: '☀️' },
-  { name: 'Monash', color: '#3B82F6', emoji: '🔬' },
+  { name: 'Monash', color: '#3B82F6', emoji: '👨🏿' },
   { name: 'Nottingham', color: '#10B981', emoji: '🏛️' },
   { name: 'APU', color: '#EF4444', emoji: '💻' },
-  { name: 'MMU', color: '#6366F1', emoji: '📡' },
+  { name: 'MMU', color: '#6366F1', emoji: '🎬' },
   { name: 'Heriot-Watt', color: '#8B5CF6', emoji: '⚙️' },
   { name: 'UOW', color: '#0EA5E9', emoji: '🌊' },
   { name: 'UCSI', color: '#14B8A6', emoji: '🏥' },
@@ -166,14 +166,14 @@ export default function Landing() {
         {/* University Marquee */}
         <section className="py-12 overflow-hidden border-y border-white/5">
           <p className="text-center text-sm text-gray-500 mb-6">Connecting students from</p>
-          <div className="relative">
+          <div className="marquee-container relative">
             {/* Gradient overlays for smooth fade effect */}
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-midnight-950 to-transparent z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-midnight-950 to-transparent z-10" />
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-midnight-950 to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-midnight-950 to-transparent z-10 pointer-events-none" />
             
-            {/* Scrolling container */}
-            <div className="flex animate-marquee">
-              {[...universities, ...universities].map((uni, i) => (
+            {/* Scrolling container - two identical tracks for seamless loop */}
+            <div className="marquee-track">
+              {[...universities, ...universities, ...universities].map((uni, i) => (
                 <div
                   key={i}
                   className="uni-card flex-shrink-0 mx-4 px-5 py-3 rounded-2xl border border-white/10 flex items-center gap-3"
